@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//ibatis.apache.org//DTD Config 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-config.dtd">
+<configuration>
+    <!-- could be omitted in sake of defaults -->
+    <settings>
+        <!--开启缓存,需要配合mapper和select中cache使用-->
+        <setting name="cacheEnabled" value="true"/>
+        <!--开启按需加载-->
+        <setting name="lazyLoadingEnabled" value="true"/>
+        <setting name="aggressiveLazyLoading" value="false"/>
+        <!--FULL 会自动映射任意复杂的结果集（无论是否嵌套）-->
+        <setting name="autoMappingBehavior" value="FULL"/>
+        <!--不允许JDBC自动生成主键-->
+        <setting name="useGeneratedKeys" value="false"/>
+        <!--设置超时时间，它决定驱动等待数据库响应的秒数-->
+        <setting name="defaultStatementTimeout" value="25"/>
+    </settings>
+
+</configuration>
