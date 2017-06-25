@@ -21,7 +21,7 @@
 ### 核心配置
 
 ```
-<bean id="dataSource" class="info.yangguo.perseus.DynamicDataSource">
+    <bean id="dataSource" class="info.yangguo.perseus.DynamicDataSource">
         <property name="master" ref="master"/>
         <property name="slaves">
             <list>
@@ -50,7 +50,6 @@
         <property name="dataSource" ref="dataSource"/>
     </bean>
     <!-- 以 @Transactional 标注来定义事务  -->
-    <tx:annotation-driven transaction-manager="transactionManager"
-                          proxy-target-class="true"/>
+    <tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true"/>
 ```
 
