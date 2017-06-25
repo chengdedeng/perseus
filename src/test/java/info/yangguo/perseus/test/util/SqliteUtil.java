@@ -1,12 +1,10 @@
 package info.yangguo.perseus.test.util;
 
-import org.aspectj.util.FileUtil;
 import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
@@ -55,18 +53,6 @@ public class SqliteUtil {
         if (dbFile.isFile() && dbFile.exists()) {
             dbFile.delete();
             logger.info("database file:{} has deleted", filePath);
-        }
-    }
-
-    public static void main(String[] args) throws IOException {
-//        String url = createNewDatabase("test.db");
-        String url = "jdbc:sqlite:/Users/yangguo/work/code/perseus/target/test-classes/test.db";
-
-        String sqlFile = SqliteUtil.class.getClassLoader().getResource("").getPath() + "user.sql";
-        String sql = FileUtil.readAsString(new File(sqlFile));
-        String[] sqls = sql.split("\n");
-        for (String tmp : sqls) {
-            executeSql(url, tmp);
         }
     }
 }

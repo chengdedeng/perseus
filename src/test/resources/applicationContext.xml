@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans
+        xmlns="http://www.springframework.org/schema/beans"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:context="http://www.springframework.org/schema/context"
+        xmlns:tx="http://www.springframework.org/schema/tx"
+        xmlns:aop="http://www.springframework.org/schema/aop"
+        xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context-3.0.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+    <!-- 激活利用注解进行装配 -->
+    <aop:aspectj-autoproxy proxy-target-class="true"/>
+    <context:component-scan base-package="info.yangguo.perseus.test.service"/>
+
+    <!-- spring的属性加载器，加载properties文件中的属性 -->
+    <bean id="propertyConfigurer"
+          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="location">
+            <value>db.properties</value>
+        </property>
+        <property name="fileEncoding" value="utf-8"/>
+    </bean>
+
+    <bean id="master" class="org.apache.tomcat.jdbc.pool.DataSource">
+        <property name="driverClassName" value="${JDBC.Driver}"></property>
+        <property name="url" value="${JDBC.ConnectionURL.Master}"></property>
+        <property name="username" value="${JDBC.Username.Master}"></property>
+        <property name="password" value="${JDBC.Password.Master}"></property>
+    </bean>
+
+
+    <bean id="slave1" class="org.apache.tomcat.jdbc.pool.DataSource">
+        <property name="driverClassName" value="${JDBC.Driver}"></property>
+        <property name="url" value="${JDBC.ConnectionURL.Slave1}"></property>
+        <property name="username" value="${JDBC.Username.Slave1}"></property>
+        <property name="password" value="${JDBC.Password.Slave1}"></property>
+    </bean>
+
+
+    <bean id="slave2" class="org.apache.tomcat.jdbc.pool.DataSource">
+        <property name="driverClassName" value="${JDBC.Driver}"></property>
+        <property name="url" value="${JDBC.ConnectionURL.Slave2}"></property>
+        <property name="username" value="${JDBC.Username.Slave2}"></property>
+        <property name="password" value="${JDBC.Password.Slave2}"></property>
+    </bean>
+
+    <bean id="dataSource" class="info.yangguo.perseus.DynamicDataSource">
+        <property name="master" ref="master"/>
+        <property name="slaves">
+            <list>
+                <ref bean="slave1"/>
+                <ref bean="slave2"/>
+            </list>
+        </property>
+    </bean>
+
+    <!-- ibatis3 工厂类 -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="typeAliasesPackage" value="info.yangguo.perseus.test.domain"/>
+        <property name="configLocation" value="classpath:sqlMapConfig.xml"/>
+        <property name="mapperLocations" value="classpath:info/yangguo/perseus/test/dao/*.xml"/>
+    </bean>
+
+    <bean class="info.yangguo.perseus.MapperScannerConfigurer">
+        <property name="basePackage" value="info.yangguo.perseus.test.dao"/>
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+    </bean>
+
+    <!-- 定义单个jdbc数据源的事务管理器 -->
+    <bean id="transactionManager"
+          class="info.yangguo.perseus.DynamicDataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <!-- 以 @Transactional 标注来定义事务  -->
+    <tx:annotation-driven transaction-manager="transactionManager"
+                          proxy-target-class="true"/>
+</beans>

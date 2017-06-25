@@ -239,7 +239,8 @@ public class DynamicSqlSessionTemplate implements SqlSession {
 
     @Override
     public <T> T getMapper(Class<T> type) {
-        return sqlSessionProxy.getMapper(type);
+        //这个至关重要,不能只用代理之后的对象来获取
+        return getConfiguration().getMapper(type, this);
     }
 
     @Override
