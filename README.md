@@ -9,7 +9,7 @@
 
 
 ### 功能
-1. 事务,非readonly到主库,readonly到从库.
+1. 事务一律到主库,不区分transaction是否是readonly.
 2. select到读库,insert/update/delete到主库.
 3. 支持select强制路由到主库(尽量避免,通过业务逻辑优化来绕过).
 
