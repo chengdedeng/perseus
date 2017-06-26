@@ -12,6 +12,7 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.lang.reflect.InvocationHandler;
@@ -22,7 +23,7 @@ import java.util.Map;
 
 import static java.lang.reflect.Proxy.newProxyInstance;
 
-public class DynamicSqlSessionTemplate implements SqlSession {
+public class DynamicSqlSessionTemplate implements SqlSession, DisposableBean {
     private static Logger logger = LoggerFactory.getLogger(DynamicSqlSessionTemplate.class);
     private static final String SELECT = "select";
     private static final String INSERT = "insert";
@@ -137,16 +138,19 @@ public class DynamicSqlSessionTemplate implements SqlSession {
     }
 
     @Override
+    @Deprecated
     public <T> Cursor<T> selectCursor(String statement) {
         return sqlSessionProxy.selectCursor(statement);
     }
 
     @Override
+    @Deprecated
     public <T> Cursor<T> selectCursor(String statement, Object parameter) {
         return sqlSessionProxy.selectCursor(statement, parameter);
     }
 
     @Override
+    @Deprecated
     public <T> Cursor<T> selectCursor(String statement, Object parameter, RowBounds rowBounds) {
         return sqlSessionProxy.selectCursor(statement, parameter, rowBounds);
     }
@@ -246,5 +250,10 @@ public class DynamicSqlSessionTemplate implements SqlSession {
     @Override
     public Connection getConnection() {
         return sqlSessionProxy.getConnection();
+    }
+
+    @Override
+    public void destroy() throws Exception {
+        //This method forces spring disposer to avoid call of SqlSessionTemplate.close() which gives UnsupportedOperationException
     }
 }
