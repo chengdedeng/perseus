@@ -7,6 +7,7 @@ import info.yangguo.perseus.test.domain.User;
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
@@ -43,5 +44,19 @@ public class UserServiceImpl implements UserService {
         userMapper1.delete("yangguo");
         Map<String, User> map3 = userMapper2.selectSlave(u1);
         Assert.assertEquals(0, map3.size());
+    }
+
+    @Override
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    public void testReadonlyTransaction() {
+        User user = new User();
+        user.setUserName("yangguo");
+        user.setType("master");
+        userMapper2.insert(user);
+        User user1 = new User();
+        user1.setUserName("yangguo");
+        Map<String, User> map = userMapper2.selectSlave(user1);
+        Assert.assertEquals("master", map.get("yangguo").getType());
+        userMapper1.delete("yangguo");
     }
 }

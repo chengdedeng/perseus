@@ -84,6 +84,11 @@ public class Test {
         Assert.assertEquals(0, map3.size());
     }
 
+    @org.junit.Test
+    public void readonlyTransaction() {
+        userService.testReadonlyTransaction();
+    }
+
     @After
     public void after() {
         String[] dbs = new String[]{"master.db", "slave1.db", "slave2.db"};

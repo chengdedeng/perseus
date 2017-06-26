@@ -9,4 +9,5 @@ package info.yangguo.perseus.test.service;
  */
 public interface UserService {
     void testTransaction();
+    void testReadonlyTransaction();
 }

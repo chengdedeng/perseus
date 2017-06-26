@@ -44,6 +44,8 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
             returnDataSource = slaves.get(index);
             log.info("No.{} slave datasource have been chose", index);
         } else {
+            //如果最外层transaction为readonly,且传播级别为Propagation.SUPPORTS,DataSourceHolder既不会被DynamicDataSourceTransactionManager也不会被DynamicSqlSessionTemplate
+            //所设置,当然还有别的可能不会被拦截的情况,我们都设置默认的数据库为master.
             returnDataSource = master;
             log.info("Master datasource have been chose by default");
         }

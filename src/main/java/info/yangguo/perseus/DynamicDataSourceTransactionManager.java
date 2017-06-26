@@ -7,8 +7,6 @@ import org.springframework.transaction.TransactionDefinition;
 
 /**
  * 事务的读写分离逻辑
- * <p/>
- * 注意事项:如果readonly中不小心有了insert,update操作,非常危险,所以我们需要将读库设置为read only.
  */
 public class DynamicDataSourceTransactionManager extends
         DataSourceTransactionManager {
@@ -18,14 +16,8 @@ public class DynamicDataSourceTransactionManager extends
     @Override
     protected void doBegin(Object transaction, TransactionDefinition definition) {
         logger.info("~~~~~~~~~~~~~~~~~~~Transaction begin~~~~~~~~~~~~~~~~~~~");
-        boolean readOnly = definition.isReadOnly();
-        if (readOnly) {
-            DataSourceHolder.setSlave();
-            logger.info("Slaver database is selected");
-        } else {
-            DataSourceHolder.setMaster();
-            logger.info("Master database is selected");
-        }
+        DataSourceHolder.setMaster();
+        logger.info("Master database is selected");
         super.doBegin(transaction, definition);
     }
 
