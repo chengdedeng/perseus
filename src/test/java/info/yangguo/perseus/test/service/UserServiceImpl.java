@@ -53,10 +53,10 @@ public class UserServiceImpl implements UserService {
         user.setUserName("yangguo");
         user.setType("master");
         userMapper2.insert(user);
-        User user1 = new User();
-        user1.setUserName("yangguo");
-        Map<String, User> map = userMapper2.selectSlave(user1);
-        Assert.assertEquals("master", map.get("yangguo").getType());
+        Map<String, User> map1 = userMapper2.selectSlave(user);
+        Assert.assertEquals("master", map1.get("yangguo").getType());
         userMapper1.delete("yangguo");
+        Map<String, User> map2 = userMapper2.selectSlave(user);
+        Assert.assertEquals(0, map2.size());
     }
 }
