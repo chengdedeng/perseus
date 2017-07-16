@@ -12,6 +12,7 @@
 1. 事务一律到主库,不区分transaction是否是readonly.
 2. select到读库,insert/update/delete到主库.
 3. 支持select强制路由到主库(尽量避免,通过业务逻辑优化来绕过).
+4. 支持mybatis-spring中的batch操作
 
 
 ### 稳定度
@@ -19,6 +20,8 @@
 
 
 ### 核心配置
+
+#### 常规配置
 
 ```
     <bean id="dataSource" class="info.yangguo.perseus.DynamicDataSource">
@@ -53,3 +56,69 @@
     <tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true"/>
 ```
 
+
+#### batch操作配置
+
+```
+    <bean id="dataSource" class="info.yangguo.perseus.DynamicDataSource">
+        <property name="master" ref="master"/>
+        <property name="slaves">
+            <list>
+                <ref bean="slave1"/>
+                <ref bean="slave2"/>
+            </list>
+        </property>
+    </bean>
+
+    <!-- transaction manager, use JtaTransactionManager for global tx -->
+    <bean id="transactionManager"
+          class="info.yangguo.perseus.DynamicDataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <!-- enable transaction demarcation with annotations -->
+    <tx:annotation-driven/>
+
+    <!-- simplest possible SqlSessionFactory configuration -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="mapperLocations" value="classpath:EmployeeMapper.xml"/>
+    </bean>
+    <!-- item reader  -->
+    <bean id="pagingNoNestedItemReader" class="info.yangguo.perseus.DynamicMyBatisPagingItemReader">
+        <property name="sqlSessionFactory" ref="sqlSessionFactory"/>
+        <property name="sqlSessionTemplate" ref="dynamicSqlSession"/>
+        <property name="queryId" value="getEmployeeNoNestedPaging"/>
+        <property name="pageSize" value="5"/>
+    </bean>
+
+    <bean id="pagingNestedItemReader" class="info.yangguo.perseus.DynamicMyBatisPagingItemReader">
+        <property name="sqlSessionFactory" ref="sqlSessionFactory"/>
+        <property name="sqlSessionTemplate" ref="dynamicSqlSession"/>
+        <property name="queryId" value="getEmployeeNestedPaging"/>
+        <property name="pageSize" value="5"/>
+    </bean>
+
+    <bean id="cursorNoNestedItemReader" class="info.yangguo.perseus.DynamicMyBatisCursorItemReader">
+        <property name="sqlSessionFactory" ref="sqlSessionFactory"/>
+        <property name="queryId" value="getEmployeeNoNestedCursor"/>
+    </bean>
+
+    <bean id="cursorNestedItemReader" class="info.yangguo.perseus.DynamicMyBatisCursorItemReader">
+        <property name="sqlSessionFactory" ref="sqlSessionFactory"/>
+        <property name="queryId" value="getEmployeeNestedCursor"/>
+    </bean>
+
+    <bean id="writer" class="org.mybatis.spring.batch.MyBatisBatchItemWriter">
+        <property name="sqlSessionFactory" ref="sqlSessionFactory"/>
+        <property name="statementId" value="updateEmployee"/>
+    </bean>
+
+    <bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+        <constructor-arg index="0" ref="sqlSessionFactory"/>
+        <constructor-arg index="1" value="BATCH"/>
+    </bean>
+    <bean id="dynamicSqlSession" class="info.yangguo.perseus.DynamicSqlSessionTemplate">
+        <constructor-arg index="0" ref="sqlSession"/>
+    </bean>
+```
