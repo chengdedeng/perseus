@@ -11,6 +11,9 @@
     <logger name="org">
         <level value="info"/>
     </logger>
+    <logger name="org.mybatis">
+        <level value="debug"/>
+    </logger>
     <logger name="com">
         <level value="info"/>
     </logger>

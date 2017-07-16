@@ -17,23 +17,31 @@ public class DataSourceHolder {
     }
 
 
-    public static void setMaster() {
+    protected static void setMaster() {
         setDataSource(MASTER);
     }
 
-    public static void setSlave() {
+    protected static void setSlave() {
         setDataSource(SLAVE);
     }
 
-    public static boolean isMaster() {
+    protected static boolean isMaster() {
         return MASTER.equals(getDataSource());
     }
 
-    public static boolean isSlave() {
+    protected static boolean isSlave() {
         return SLAVE.equals(getDataSource());
     }
 
-    public static void clearDataSource() {
+    protected static boolean haveValue() {
+        if (dataSources.get() != null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    protected static void clearDataSource() {
         dataSources.remove();
     }
 }
