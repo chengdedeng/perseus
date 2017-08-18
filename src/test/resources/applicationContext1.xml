@@ -82,8 +82,15 @@
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <property name="dataSource" ref="dataSource"/>
         <property name="typeAliasesPackage" value="info.yangguo.perseus.test.domain"/>
-        <property name="configLocation" value="classpath:sqlMapConfig.xml"/>
+        <property name="configLocation" value="classpath:mybatis-config.xml"/>
         <property name="mapperLocations" value="classpath:info/yangguo/perseus/test/dao/*.xml"/>
+    </bean>
+
+    <bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+        <constructor-arg index="0" ref="sqlSessionFactory"/>
+    </bean>
+    <bean id="dynamicSqlSession" class="info.yangguo.perseus.DynamicSqlSessionTemplate">
+        <constructor-arg index="0" ref="sqlSession"/>
     </bean>
 
     <bean class="info.yangguo.perseus.MapperScannerConfigurer">
