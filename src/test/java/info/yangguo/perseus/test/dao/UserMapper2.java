@@ -2,11 +2,13 @@ package info.yangguo.perseus.test.dao;
 
 import info.yangguo.perseus.test.domain.User;
 
+import org.apache.ibatis.annotations.CacheNamespace;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Result;
 import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.cache.decorators.LruCache;
 
 import java.util.Map;
 
@@ -17,6 +19,7 @@ import java.util.Map;
  * Description:
  *
  */
+@CacheNamespace
 public interface UserMapper2 {
     @Select("/*master*/select\n" +
             "        *\n" +

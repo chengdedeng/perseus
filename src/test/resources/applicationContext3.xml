@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+       Copyright 2010-2017 the original author or authors.
+
+       Licensed under the Apache License, Version 2.0 (the "License");
+       you may not use this file except in compliance with the License.
+       You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+       Unless required by applicable law or agreed to in writing, software
+       distributed under the License is distributed on an "AS IS" BASIS,
+       WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+       See the License for the specific language governing permissions and
+       limitations under the License.
+
+-->
+<!--
+    The base sample context containing commnon beans shared by all the
+    MyBatis-Spring sample contexts.
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+       xsi:schemaLocation="
+     http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+     http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd">
+
+    <!-- in-memory database and  datasource -->
+    <jdbc:embedded-database id="master">
+        <jdbc:script location="classpath:rowbounds/database-schema.sql"/>
+    </jdbc:embedded-database>
+    <jdbc:embedded-database id="slave1">
+        <jdbc:script location="classpath:rowbounds/database-schema.sql"/>
+        <jdbc:script location="classpath:rowbounds/database-slave.sql"/>
+    </jdbc:embedded-database>
+    <jdbc:embedded-database id="slave2">
+        <jdbc:script location="classpath:rowbounds/database-schema.sql"/>
+        <jdbc:script location="classpath:rowbounds/database-slave.sql"/>
+    </jdbc:embedded-database>
+
+    <bean id="dataSource" class="info.yangguo.perseus.DynamicDataSource">
+        <property name="master" ref="master"/>
+        <property name="slaves">
+            <list>
+                <ref bean="slave1"/>
+                <ref bean="slave2"/>
+            </list>
+        </property>
+    </bean>
+
+    <!-- transaction manager, use JtaTransactionManager for global tx -->
+    <bean id="transactionManager"
+          class="info.yangguo.perseus.DynamicDataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <!-- enable transaction demarcation with annotations -->
+    <tx:annotation-driven/>
+
+    <!-- simplest possible SqlSessionFactory configuration -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="configLocation" value="classpath:rowbounds/mybatis-config.xml"/>
+        <property name="mapperLocations">
+            <array>
+                <value>classpath:info/yangguo/perseus/test/dao/*.xml</value>
+            </array>
+        </property>
+        <property name="typeAliasesPackage" value="info.yangguo.perseus.test.domain"/>
+        <property name="plugins">
+            <array>
+                <bean class="com.github.pagehelper.PageInterceptor">
+                    <!-- 这里的几个配置主要演示如何使用，如果不理解，一定要去掉下面的配置 -->
+                    <property name="properties">
+                        <value>
+                            helperDialect=mysql
+                            reasonable=true
+                            supportMethodsArguments=true
+                            params=count=countSql
+                            autoRuntimeDialect=true
+                        </value>
+                    </property>
+                </bean>
+            </array>
+        </property>
+    </bean>
+
+    <bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+        <constructor-arg index="0" ref="sqlSessionFactory"/>
+    </bean>
+    <bean id="dynamicSqlSession" class="info.yangguo.perseus.DynamicSqlSessionTemplate">
+        <constructor-arg index="0" ref="sqlSession"/>
+    </bean>
+    <bean class="info.yangguo.perseus.MapperScannerConfigurer">
+        <property name="basePackage" value="info.yangguo.perseus.test.dao"/>
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+    </bean>
+</beans>

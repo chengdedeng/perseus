@@ -61,10 +61,13 @@ public class RWTest {
 
     @org.junit.Test
     public void selectSlave() {
-        User user = new User();
-        user.setUserName("yangguo");
-        Map<String, User> map = userMapper2.selectSlave(user);
-        Assert.assertEquals(true, map.get("yangguo").getType().startsWith("slave"));
+        //测试二级缓存是否生效
+        for (int i = 0; i < 2; i++) {
+            User user = new User();
+            user.setUserName("yangguo");
+            Map<String, User> map = userMapper2.selectSlave(user);
+            Assert.assertEquals(true, map.get("yangguo").getType().startsWith("slave"));
+        }
     }
 
     @org.junit.Test

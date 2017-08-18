@@ -15,9 +15,10 @@
  */
 package info.yangguo.perseus.test.domain;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Employee {
+public class Employee implements Serializable {
 
   private int id;
   private String name;
