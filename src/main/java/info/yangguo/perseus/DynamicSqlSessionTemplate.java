@@ -59,11 +59,11 @@ public class DynamicSqlSessionTemplate implements SqlSession, DisposableBean {
                     MappedStatement ms = getConfiguration().getMappedStatement((String) args[0]);
                     //此处只是为了拿SQL语句,并不是获取执行的BoundSql
                     BoundSql boundSql = null;
-                    if (args.length == 1) {
-                        boundSql = ms.getSqlSource().getBoundSql(null);
-                    }
-                    if (args.length > 1) {
-                        boundSql = ms.getSqlSource().getBoundSql(args[1]);
+                    Class[] parameterTypes = method.getParameterTypes();
+                    if (args.length > 1 && parameterTypes[1].getName().equals("java.lang.Object")) {
+                        boundSql = ms.getBoundSql(args[1]);
+                    } else {
+                        boundSql = ms.getBoundSql(null);
                     }
                     String sql = boundSql.getSql();
                     if (sql.startsWith("/*master*/")) {
