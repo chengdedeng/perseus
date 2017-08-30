@@ -1,65 +1,48 @@
-### 项目介绍
-数据库读写分离是再基础不过的需求了,读写分离通常有三种方案实现:
-1. 多数据源,通过代码硬编码实现.
-2. 修改ORM框架实现.
-3. 实现数据库协议来实现.
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
 
-方案一最简单,但是开发人员工作量最大,并且容易犯错;虽然方案三开发人员来说是透明的且不限制编程语言,但是开发难度最大且数据库的支持范围
-较窄.本项目基于方案二,选择了Java中最流行的Mybatis和Spring来实现,所以只适用于基于Mybatis+Spring实现的Java项目.
+       Copyright 2010-2017 the original author or authors.
 
+       Licensed under the Apache License, Version 2.0 (the "License");
+       you may not use this file except in compliance with the License.
+       You may obtain a copy of the License at
 
-### 功能
-1. 事务一律到主库,不区分transaction是否是readonly.
-2. select到读库,insert/update/delete到主库.
-3. 支持select强制路由到主库(尽量避免,通过业务逻辑优化来绕过).
-4. 支持mybatis-spring中的batch操作.
+          http://www.apache.org/licenses/LICENSE-2.0
 
+       Unless required by applicable law or agreed to in writing, software
+       distributed under the License is distributed on an "AS IS" BASIS,
+       WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+       See the License for the specific language governing permissions and
+       limitations under the License.
 
-### 稳定度
-该项目在笔者公司,上百个项目中广泛应用,已经很成熟,测试代码中有详细的配置和测试代码.
+-->
+<!--
+    The base sample context containing commnon beans shared by all the
+    MyBatis-Spring sample contexts.
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+       xsi:schemaLocation="
+     http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+     http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd">
 
+    <!-- in-memory database and  datasource -->
+    <jdbc:embedded-database id="master">
+        <jdbc:script location="classpath:database-schema.sql"/>
+        <jdbc:script location="classpath:database-master.sql"/>
+    </jdbc:embedded-database>
+    <jdbc:embedded-database id="slave1">
+        <jdbc:script location="classpath:database-schema.sql"/>
+        <jdbc:script location="classpath:database-slave1.sql"/>
+    </jdbc:embedded-database>
+    <jdbc:embedded-database id="slave2">
+        <jdbc:script location="classpath:database-schema.sql"/>
+        <jdbc:script location="classpath:database-slave2.sql"/>
+    </jdbc:embedded-database>
 
-### 核心配置
-
-#### 常规配置
-
-```
-    <bean id="dataSource" class="info.yangguo.perseus.DynamicDataSource">
-        <property name="master" ref="master"/>
-        <property name="slaves">
-            <list>
-                <ref bean="slave1"/>
-                <ref bean="slave2"/>
-            </list>
-        </property>
-    </bean>
-
-    <!-- ibatis3 工厂类 -->
-    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
-        <property name="dataSource" ref="dataSource"/>
-        <property name="typeAliasesPackage" value="info.yangguo.perseus.test.domain"/>
-        <property name="configLocation" value="classpath:sqlMapConfig.xml"/>
-        <property name="mapperLocations" value="classpath:info/yangguo/perseus/test/dao/*.xml"/>
-    </bean>
-
-    <bean class="info.yangguo.perseus.MapperScannerConfigurer">
-        <property name="basePackage" value="info.yangguo.perseus.test.dao"/>
-        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
-    </bean>
-
-    <!-- 定义单个jdbc数据源的事务管理器 -->
-    <bean id="transactionManager"
-          class="info.yangguo.perseus.DynamicDataSourceTransactionManager">
-        <property name="dataSource" ref="dataSource"/>
-    </bean>
-    <!-- 以 @Transactional 标注来定义事务  -->
-    <tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true"/>
-```
-
-
-#### batch操作配置
-
-```
     <bean id="dataSource" class="info.yangguo.perseus.DynamicDataSource">
         <property name="master" ref="master"/>
         <property name="slaves">
@@ -121,4 +104,5 @@
     <bean id="dynamicSqlSession" class="info.yangguo.perseus.DynamicSqlSessionTemplate">
         <constructor-arg index="0" ref="sqlSession"/>
     </bean>
-```
+
+</beans>

@@ -4,12 +4,15 @@
 
     <appender class="org.apache.log4j.ConsoleAppender" name="stdout">
         <layout class="org.apache.log4j.PatternLayout">
-            <param value="%d{yyyy-MM-dd HH:mm:ss} [%p]-[%t]-[%X{traceId}]-[%l] %m%n"
+            <param value="%d{yyyy-MM-dd HH:mm:ss} [%p]-[%t]-[%l] %m%n"
                    name="ConversionPattern"/>
         </layout>
     </appender>
     <logger name="org">
         <level value="info"/>
+    </logger>
+    <logger name="org.mybatis">
+        <level value="debug"/>
     </logger>
     <logger name="com">
         <level value="info"/>

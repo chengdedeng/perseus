@@ -21,7 +21,7 @@ import java.util.Map;
  * Description:
  *
  */
-public class Test {
+public class RWTest {
     UserMapper1 userMapper1;
     UserMapper2 userMapper2;
     UserService userService;
@@ -41,7 +41,7 @@ public class Test {
             }
         }
 
-        String[] xmls = new String[]{"classpath:applicationContext.xml"};
+        String[] xmls = new String[]{"classpath:applicationContext1.xml"};
         ApplicationContext context = new ClassPathXmlApplicationContext(xmls);
         userMapper1 = (UserMapper1) context.getBean("userMapper1");
         userMapper2 = (UserMapper2) context.getBean("userMapper2");
@@ -61,10 +61,13 @@ public class Test {
 
     @org.junit.Test
     public void selectSlave() {
-        User user = new User();
-        user.setUserName("yangguo");
-        Map<String, User> map = userMapper2.selectSlave(user);
-        Assert.assertEquals(true, map.get("yangguo").getType().startsWith("slave"));
+        //测试二级缓存是否生效
+        for (int i = 0; i < 2; i++) {
+            User user = new User();
+            user.setUserName("yangguo");
+            Map<String, User> map = userMapper2.selectSlave(user);
+            Assert.assertEquals(true, map.get("yangguo").getType().startsWith("slave"));
+        }
     }
 
     @org.junit.Test
