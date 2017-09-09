@@ -6,7 +6,7 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 
 /**
- * 事务的读写分离逻辑
+ * Read and write separation logic for transactions.
  */
 public class DynamicDataSourceTransactionManager extends
         DataSourceTransactionManager {
