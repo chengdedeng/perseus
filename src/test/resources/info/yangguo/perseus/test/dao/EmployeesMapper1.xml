@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="info.yangguo.perseus.test.dao.EmployeesMapper1">
+    <resultMap id="BaseResultMap" type="Employee">
+        <result column="id" property="id" jdbcType="INTEGER"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="salary" property="salary" jdbcType="INTEGER"/>
+        <result column="skill" property="skill" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <delete id="delete" parameterType="String">
+        DELETE
+        from
+        employees
+        <where>
+            <if test="name!=null and name!=''">
+                name = #{name}
+            </if>
+        </where>
+    </delete>
+
+    <update id="update"
+            parameterType="Employee">
+        update
+        employees
+        SET
+        salary = #{salary}
+        WHERE
+        name = #{name}
+    </update>
+</mapper>
