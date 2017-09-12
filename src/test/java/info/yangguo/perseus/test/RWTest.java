@@ -1,102 +1,68 @@
 package info.yangguo.perseus.test;
 
-import info.yangguo.perseus.test.dao.UserMapper1;
-import info.yangguo.perseus.test.dao.UserMapper2;
-import info.yangguo.perseus.test.domain.User;
-import info.yangguo.perseus.test.service.UserService;
-import info.yangguo.perseus.test.util.SqliteUtil;
+import info.yangguo.perseus.test.dao.EmployeesMapper1;
+import info.yangguo.perseus.test.dao.EmployeesMapper2;
+import info.yangguo.perseus.test.domain.Employee;
+import info.yangguo.perseus.test.service.EmployeesService;
 
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author:杨果
  * @date:16/7/4 下午1:42
- *
+ * <p>
  * Description:
- *
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {"classpath:applicationContext1.xml"})
 public class RWTest {
-    UserMapper1 userMapper1;
-    UserMapper2 userMapper2;
-    UserService userService;
+    @Autowired
+    private EmployeesMapper1 employeesMapper1;
+    @Autowired
+    private EmployeesMapper2 employeesMapper2;
+    @Autowired
+    private EmployeesService employeesService;
 
-    @Before
-    public void before() {
-        String[] dbs = new String[]{"master", "slave1", "slave2"};
-        for (String db : dbs) {
-            String url = SqliteUtil.createNewDatabase(db + ".db");
-            String sql1 = "DROP TABLE IF EXISTS \"user\";";
-            SqliteUtil.executeSql(url, sql1);
-            String sql2 = "CREATE TABLE \"user\" (\"user_name\" text NOT NULL,\"type\" text,PRIMARY KEY(\"user_name\"));";
-            SqliteUtil.executeSql(url, sql2);
-            if (db.startsWith("slave")) {
-                String sql3 = "INSERT INTO \"user\" VALUES ('yangguo','" + db + "');";
-                SqliteUtil.executeSql(url, sql3);
-            }
-        }
-
-        String[] xmls = new String[]{"classpath:applicationContext1.xml"};
-        ApplicationContext context = new ClassPathXmlApplicationContext(xmls);
-        userMapper1 = (UserMapper1) context.getBean("userMapper1");
-        userMapper2 = (UserMapper2) context.getBean("userMapper2");
-        userService = (UserService) context.getBean("userServiceImpl");
-    }
-
-    @org.junit.Test
+    @Test
     public void transaction() {
-        userService.testTransaction();
-        User user = new User();
-        user.setUserName("yangguo");
-        Map<String, User> map1 = userMapper2.selectMaster(user);
-        Assert.assertEquals(0, map1.size());
-        Map<String, User> map2 = userMapper2.selectSlave(user);
-        Assert.assertEquals(1, map2.size());
+        employeesService.testTransaction();
     }
 
-    @org.junit.Test
+    @Test
     public void selectSlave() {
         //测试二级缓存是否生效
         for (int i = 0; i < 2; i++) {
-            User user = new User();
-            user.setUserName("yangguo");
-            Map<String, User> map = userMapper2.selectSlave(user);
-            Assert.assertEquals(true, map.get("yangguo").getType().startsWith("slave"));
+            Employee user = new Employee();
+            user.setId(4);
+            List<Employee> employeeList = employeesMapper2.selectSlave(user);
+            Pattern pattern = Pattern.compile("Valentina-slave\\d");
+            Matcher matcher = pattern.matcher(employeeList.get(0).getName());
+            Assert.assertEquals(true, matcher.matches());
         }
     }
 
-    @org.junit.Test
-    public void combination() {
-        User user = new User();
-        user.setUserName("yangguo");
-        user.setType("master1");
-        userMapper2.insert(user);
-        Map<String, User> map1 = userMapper2.selectMaster(user);
-        Assert.assertEquals("master1", map1.get("yangguo").getType());
-        user.setType("master2");
-        userMapper1.update(user);
-        Map<String, User> map2 = userMapper2.selectMaster(user);
-        Assert.assertEquals("master2", map2.get("yangguo").getType());
-        userMapper1.delete("yangguo");
-        Map<String, User> map3 = userMapper2.selectMaster(user);
-        Assert.assertEquals(0, map3.size());
+    @Test
+    public void selectMaster() {
+        Employee employee = new Employee();
+        employee.setName("Valentina-master");
+        Map<String, Employee> employeeMap = employeesMapper2.selectMaster(employee);
+        Assert.assertEquals(4000, employeeMap.get("Valentina-master").getSalary());
+
     }
 
-    @org.junit.Test
+
+    @Test
     public void readonlyTransaction() {
-        userService.testReadonlyTransaction();
-    }
-
-    @After
-    public void after() {
-        String[] dbs = new String[]{"master.db", "slave1.db", "slave2.db"};
-        for (String db : dbs) {
-            SqliteUtil.dropDatabase(db);
-        }
+        employeesService.testReadonlyTransaction();
     }
 }

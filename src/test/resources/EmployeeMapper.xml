@@ -42,7 +42,7 @@
     <id column="id" property="id"/>
     <result property="name" column="name"/>
     <result property="salary" column="salary"/>
-    <collection property="skills" ofType="string">
+    <collection property="skill" ofType="string">
       <result column="skill"/>
     </collection>
   </resultMap>

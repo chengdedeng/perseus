@@ -4,69 +4,29 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns:context="http://www.springframework.org/schema/context"
         xmlns:tx="http://www.springframework.org/schema/tx"
-        xmlns:aop="http://www.springframework.org/schema/aop"
+        xmlns:aop="http://www.springframework.org/schema/aop" xmlns:jdbc="http://www.springframework.org/schema/jdbc"
         xsi:schemaLocation="http://www.springframework.org/schema/beans
 		http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
 		http://www.springframework.org/schema/context
-		http://www.springframework.org/schema/context/spring-context-3.0.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+		http://www.springframework.org/schema/context/spring-context-3.0.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd">
     <!-- 激活利用注解进行装配 -->
     <aop:aspectj-autoproxy proxy-target-class="true"/>
-    <context:component-scan base-package="info.yangguo.perseus.test.service"/>
+    <context:component-scan base-package="info.yangguo.perseus.test"/>
+    <tx:annotation-driven/>
 
-    <!-- spring的属性加载器，加载properties文件中的属性 -->
-    <bean id="propertyConfigurer"
-          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="location">
-            <value>db.properties</value>
-        </property>
-        <property name="fileEncoding" value="utf-8"/>
-    </bean>
-
-
-    <bean id="dataSourceParent" class="org.apache.tomcat.jdbc.pool.DataSource" abstract="true">
-        <property name="driverClassName" value="${JDBC.Driver}"></property>
-        <property name="jmxEnabled" value="${Tomcat.jdbc.pool.jmxEnabled}"></property>
-        <property name="testWhileIdle" value="${Tomcat.jdbc.pool.testWhileIdle}"></property>
-        <property name="testOnBorrow" value="${Tomcat.jdbc.pool.testOnBorrow}"></property>
-        <property name="validationQuery"
-                  value="${Tomcat.jdbc.pool.validationQuery.sqlserverOrmysql}"></property>
-        <property name="testOnReturn" value="${Tomcat.jdbc.pool.testOnReturn}"></property>
-        <property name="validationInterval"
-                  value="${Tomcat.jdbc.pool.validationInterval}"></property>
-        <property name="timeBetweenEvictionRunsMillis"
-                  value="${Tomcat.jdbc.pool.timeBetweenEvictionRunsMillis}"></property>
-        <property name="maxActive" value="${Tomcat.jdbc.pool.maxActive}"></property>
-        <property name="initialSize" value="${Tomcat.jdbc.pool.initialSize}"></property>
-        <property name="minIdle" value="${Tomcat.jdbc.pool.minIdle}"></property>
-        <property name="maxWait" value="${Tomcat.jdbc.pool.maxWait}"></property>
-        <property name="removeAbandoned" value="${Tomcat.jdbc.pool.removeAbandoned}"></property>
-        <property name="removeAbandonedTimeout"
-                  value="${Tomcat.jdbc.pool.removeAbandonedTimeout}"></property>
-        <property name="logAbandoned" value="${Tomcat.jdbc.pool.logAbandoned}"></property>
-        <property name="minEvictableIdleTimeMillis"
-                  value="${Tomcat.jdbc.pool.minEvictableIdleTimeMillis}"></property>
-        <property name="jdbcInterceptors" value="${Tomcat.jdbc.pool.jdbcInterceptors}"></property>
-    </bean>
-
-    <bean id="master" class="org.apache.tomcat.jdbc.pool.DataSource" parent="dataSourceParent">
-        <property name="url" value="${JDBC.ConnectionURL.Master}"></property>
-        <property name="username" value="${JDBC.Username.Master}"></property>
-        <property name="password" value="${JDBC.Password.Master}"></property>
-    </bean>
-
-
-    <bean id="slave1" class="org.apache.tomcat.jdbc.pool.DataSource" parent="dataSourceParent">
-        <property name="url" value="${JDBC.ConnectionURL.Slave1}"></property>
-        <property name="username" value="${JDBC.Username.Slave1}"></property>
-        <property name="password" value="${JDBC.Password.Slave1}"></property>
-    </bean>
-
-
-    <bean id="slave2" class="org.apache.tomcat.jdbc.pool.DataSource" parent="dataSourceParent">
-        <property name="url" value="${JDBC.ConnectionURL.Slave2}"></property>
-        <property name="username" value="${JDBC.Username.Slave2}"></property>
-        <property name="password" value="${JDBC.Password.Slave2}"></property>
-    </bean>
+    <!-- in-memory database and  datasource -->
+    <jdbc:embedded-database id="master">
+        <jdbc:script location="classpath:database-schema.sql"/>
+        <jdbc:script location="classpath:database-master.sql"/>
+    </jdbc:embedded-database>
+    <jdbc:embedded-database id="slave1">
+        <jdbc:script location="classpath:database-schema.sql"/>
+        <jdbc:script location="classpath:database-slave1.sql"/>
+    </jdbc:embedded-database>
+    <jdbc:embedded-database id="slave2">
+        <jdbc:script location="classpath:database-schema.sql"/>
+        <jdbc:script location="classpath:database-slave2.sql"/>
+    </jdbc:embedded-database>
 
     <bean id="dataSource" class="info.yangguo.perseus.DynamicDataSource">
         <property name="master" ref="master"/>
