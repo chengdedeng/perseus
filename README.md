@@ -13,7 +13,7 @@ This project is based on the program II, select  [Mybatis](http://www.mybatis.or
 
 ### Function
 1. The transaction is routed to the master database and does't distinguish whether transaction is readonly. due to readonly don't really start the transaction, 
-just activate the transaction synchronization, so don't be [DynamicDataSourceTransactionManager](/src/main/Java/info/yangguo/Perseus/DynamicDataSourceTransactionManager.Java) to intercept, 
+just activate the transaction synchronization, so don't be [DynamicDataSourceTransactionManager](/src/main/java/info/yangguo/perseus/DynamicDataSourceTransactionManager.java) to intercept, 
 so setting to be hit by the default(master database), and the execution of all queries in a read only transaction will reuse the same JDBCConnection(SqlSession).
 2. The select query is routed to the slave database, insert/update/delete SQL routing to the main master database.
 3. Support select query to force routing to master database (as far as possible, bypassing business logic optimization).
