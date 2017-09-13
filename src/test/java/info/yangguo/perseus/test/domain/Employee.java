@@ -15,21 +15,12 @@
  */
 package info.yangguo.perseus.test.domain;
 
-import javax.persistence.Column;
-import javax.persistence.Id;
-import javax.persistence.Table;
 import java.io.Serializable;
 import java.util.List;
-@Table(name = "employees")
 public class Employee implements Serializable {
-    @Id
-    @Column(name = "id")
     private int id;
-    @Column(name = "name")
     private String name;
-    @Column(name = "salary")
     private int salary;
-    @Column(name = "skill")
     private String skill;
 
     public int getId() {

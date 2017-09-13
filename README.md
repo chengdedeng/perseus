@@ -12,7 +12,9 @@ for developer and don't restrict the programming language, but it's most difficu
 This project is based on the program II, select  [Mybatis](http://www.mybatis.org/mybatis-3/) and [Spring](https://spring.io/) of most popular framework in java, so it is only applicable to the Mybatis + Spring implementation of the Java project.
 
 ### Function
-1. The transaction is routed to the master database and does't distinguish whether transaction is readonly.
+1. The transaction is routed to the master database and does't distinguish whether transaction is readonly. Due to readonly don't really start the transaction, 
+just activate the transaction synchronization, so don't be [DynamicDataSourceTransactionManager](/src/main/Java/info/yangguo/Perseus/DynamicDataSourceTransactionManager.Java) to intercept, 
+so setting to be hit by the default(master database), and the execution of all statements in a read only transaction will reuse the same JDBCConnection(SqlSession).
 2. The select query is routed to the slave database, insert/update/delete SQL routing to the main master database.
 3. Support select query to force routing to master database (as far as possible, bypassing business logic optimization).
 4. Support batch operations in mybatis-spring.

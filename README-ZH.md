@@ -11,7 +11,8 @@
 
 
 ### 功能
-1. 事务一律到主库,不区分transaction是否是readonly.
+1. 事务一律到主库,不区分transaction是否是readonly.由于readonly并不真正的启动事务,只是激活transaction synchronization,因此并不会被[DynamicDataSourceTransactionManager](/src/main/java/info/yangguo/perseus/DynamicDataSourceTransactionManager.java)截获,
+所以就被default(master database)设置命中,并且一个read only transaction中的所有语句的执行都会复用同一个JDBCConnection(SqlSession).
 2. select到读库,insert/update/delete到主库.
 3. 支持select强制路由到主库(尽量避免,通过业务逻辑优化来绕过).
 4. 支持mybatis-spring中的batch操作.
