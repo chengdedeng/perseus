@@ -54,10 +54,16 @@ public class EmployeesServiceImpl implements EmployeesService {
     public void testReadonlyTransaction() {
         Employee e1 = new Employee();
         e1.setId(3);
-        List<Employee> employees = employeesMapper2.selectSlave(e1);
-        Assert.assertEquals(3, employees.size());
-        for (Employee employee : employees) {
+        List<Employee> employees1 = employeesMapper2.selectSlave(e1);
+        Assert.assertEquals(3, employees1.size());
+        for (Employee employee : employees1) {
             Assert.assertEquals("Eli-master", employee.getName());
+        }
+        e1.setId(4);
+        List<Employee> employees2 = employeesMapper2.selectSlave(e1);
+        Assert.assertEquals(1, employees2.size());
+        for (Employee employee : employees2) {
+            Assert.assertEquals("Valentina-master", employee.getName());
         }
     }
 }
