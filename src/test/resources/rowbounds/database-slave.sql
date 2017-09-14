@@ -181,4 +181,9 @@ insert into country (id, countryname, countrycode) values(180,'Yugoslavia','YU')
 insert into country (id, countryname, countrycode) values(181,'Zimbabwe','ZW');
 insert into country (id, countryname, countrycode) values(182,'Zaire','ZR');
 insert into country (id, countryname, countrycode) values(183,'Zambia','ZM');
+insert into country (id, countryname, countrycode) values(184,'China','ZH');
+insert into country (id, countryname, countrycode) values(185,'China','ZH');
+insert into country (id, countryname, countrycode) values(186,'China','ZH');
+insert into country (id, countryname, countrycode) values(187,'China','ZH');
+insert into country (id, countryname, countrycode) values(188,'China','ZH');
 

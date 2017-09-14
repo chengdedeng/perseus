@@ -39,19 +39,6 @@ public class RWTest {
     }
 
     @Test
-    public void selectSlave() {
-        //测试二级缓存是否生效
-        for (int i = 0; i < 2; i++) {
-            Employee user = new Employee();
-            user.setId(4);
-            List<Employee> employeeList = employeesMapper2.selectSlave(user);
-            Pattern pattern = Pattern.compile("Valentina-slave\\d");
-            Matcher matcher = pattern.matcher(employeeList.get(0).getName());
-            Assert.assertEquals(true, matcher.matches());
-        }
-    }
-
-    @Test
     public void selectMaster() {
         Employee employee = new Employee();
         employee.setName("Valentina-master");

@@ -32,4 +32,8 @@
     <select id="selectAll" resultType="Country">
         select * from country order by id
     </select>
+    <!--parameterType既可以是map也可以是pojo-->
+    <select id="selectByCountryname" parameterType="Country" resultType="Country">
+        select * from country where countryname=#{countryname} order by id
+    </select>
 </mapper>

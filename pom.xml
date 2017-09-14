@@ -6,7 +6,7 @@
 
     <groupId>info.yangguo</groupId>
     <artifactId>perseus</artifactId>
-    <version>1.0.1.SNAPSHOT</version>
+    <version>1.0.0.RELEASE</version>
 
     <build>
         <plugins>
@@ -74,6 +74,7 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
             <version>${org.springframework.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -104,12 +105,6 @@
             <groupId>org.springframework.batch</groupId>
             <artifactId>spring-batch-infrastructure</artifactId>
             <version>3.0.7.RELEASE</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
-            <version>${org.springframework.version}</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.hsqldb</groupId>
