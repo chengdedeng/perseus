@@ -1,6 +1,5 @@
-## [中文文档](/README-ZH.md)
-
 [![Join the chat at https://gitter.im/chengdedeng/perseus](https://badges.gitter.im/chengdedeng/perseus.svg)](https://gitter.im/chengdedeng/perseus?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+## [中文文档](/README-ZH.md)
 
 ### Project description
 The read/write separation of databases is a basic requirement, it is usually comes in three ways:
