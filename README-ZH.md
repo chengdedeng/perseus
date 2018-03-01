@@ -1,3 +1,4 @@
+[![Join the chat at https://gitter.im/chengdedeng/perseus](https://badges.gitter.im/chengdedeng/perseus.svg)](https://gitter.im/chengdedeng/perseus?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 ## [English document](/README-ZH.md)
 
 ### 项目介绍
